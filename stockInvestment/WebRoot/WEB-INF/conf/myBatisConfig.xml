@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<!-- 开启懒加载 -->
+	<settings>
+		<setting name="lazyLoadingEnabled" value="true"/>
+		<setting name="aggressiveLazyLoading" value="false"/>
+		<setting name="cacheEnabled" value="true" />
+	</settings>
+	  <typeAliases>
+       <typeAlias type="com.stock.common.mybatis.Page" alias="page"/>
+    </typeAliases>
+	<plugins>
+       <plugin interceptor="com.stock.common.mybatis.PageInterceptor">
+           <property name="databaseType" value="Mysql"/>
+       </plugin>
+    </plugins>
+	<mappers>
+	     <mapper resource="com/stock/mybatis-conf/jikeUser.xml" />
+	</mappers>
+</configuration>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<!-- 线程执行器配置，用于任务注册 -->
+	<bean id="executor"
+		class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="10" />
+		<property name="maxPoolSize" value="100" />
+		<property name="queueCapacity" value="500" />
+	</bean>
+
+	<!-- 设置调度 -->
+	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="everyday0001Task" />
+				<ref bean="everyHourTask" />
+				<ref bean="everyday0800amTask" />
+				<ref bean="everyday1200amTask" />
+				<ref bean="everyday1600pmTask" />
+				<ref bean="everymonthDay0001pmTask" />				
+			</list>
+		</property>
+		<property name="taskExecutor" ref="executor" />
+	</bean>
+	
+	<!-- 通知中心自动任务类 -->
+	<bean id="taskBean" class="com.easy.schedule.TaskSchedule">
+		<property name="executor" ref="executor"></property>
+	</bean>
+	
+	
+	<!--  每天0001-->
+	<bean id="everyday0001Task" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail">
+            <ref bean="everyday0001TaskTAGGER"/>
+        </property>
+        <property name="cronExpression">
+            <value>0 00 01 ? * *</value>
+        </property>
+    </bean>
+	
+	<bean id="everyday0001TaskTAGGER" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject">
+            <ref bean="taskBean"/>
+        </property>
+        <property name="targetMethod"> 
+            <value>everyday0001Task</value>
+        </property>
+    </bean>
+    
+    
+    
+     <!-- 每小时执行一次 -->
+    <bean id="everyHourTask" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail">
+            <ref bean="taskHour"/>
+        </property>
+        <property name="cronExpression">
+            <value>0 0 */1 * * ?</value>
+        </property>
+    </bean>
+    <bean id="taskHour" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject">
+            <ref bean="taskBean"/>
+        </property>
+        <property name="targetMethod"> 
+            <value>everyHourTask</value>
+        </property>
+    </bean>
+    
+    
+    <!-- 每天8点钟执行一次 -->
+    <bean id="everyday0800amTask" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail">
+            <ref bean="everyday0800amTaskID"/>
+        </property>
+        <property name="cronExpression">
+            <value>0 00 08 ? * *</value>
+        </property>
+    </bean>
+    <bean id="everyday0800amTaskID" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject">
+            <ref bean="taskBean"/>
+        </property>
+        <property name="targetMethod"> 
+            <value>everyday0800amTask</value>
+        </property>
+    </bean>
+    
+     <!-- 每天12点执行一次 -->
+    <bean id="everyday1200amTask" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail">
+            <ref bean="task008"/>
+        </property>
+        <property name="cronExpression">
+            <value>0 00 12 * * ?</value>
+        </property>
+    </bean>
+    <bean id="task008" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject">
+            <ref bean="taskBean"/>
+        </property>
+        <property name="targetMethod"> 
+            <value>everyday1200amTask</value>
+        </property>
+    </bean>
+    
+    
+    <!-- 每天下午4点执行 -->
+    <bean id="everyday1600pmTask" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail">
+            <ref bean="task027"/>
+        </property>
+        <property name="cronExpression">
+            <value>0 00 16 ? * *</value>
+        </property>
+    </bean>
+    <bean id="task027" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject">
+            <ref bean="taskBean"/>
+        </property>
+        <property name="targetMethod"> 
+            <value>everyday1600pmTask</value>
+        </property>
+    </bean>
+    <!-- 每月最后一天23点50执行 -->
+    <bean id="everymonthDay0001pmTask" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail">
+            <ref bean="task030"/>
+        </property>
+        <property name="cronExpression">
+            <value>0 01 00 1 * ?</value>
+        </property>
+    </bean>
+    <bean id="task030" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject">
+            <ref bean="taskBean"/>
+        </property>
+        <property name="targetMethod"> 
+            <value>everymonthDay0001pmTask</value>
+        </property>
+    </bean>
+    
+    
+    
+</beans>
