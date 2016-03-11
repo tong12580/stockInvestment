@@ -8,26 +8,25 @@
 
 	<select id="getUser" parameterType="map" resultType="java.util.LinkedHashMap" useCache="true" timeout="6000" >
 		
-		select 	id,nickName,status
-		from 	users 
+		select 	a.id,a.nickName,a.status,a.salt,a.loginpwd
+		from 	users a
 		where 	1=1
 		<if test="phone!=null">
 			and phone=#{phone}
-			and loginpwd=#{loginpwd}
 		</if>
 	</select>
 	
 	<insert id="addUser"  parameterType="java.util.Map" >
 		insert into users
 		(
-			loginpwd
+			loginpwd,
 			salt,
 			phone,
 			status,
 			createtime
 			
 		)values(
-			#{loginpwd},
+			#{loginPwd},
 			#{salt},
 			#{phone},
 			#{status},
@@ -38,21 +37,21 @@
 	<update id="updUser" parameterType="java.util.Map">
 		update users
 		<set>
-			<if test="nickName!=null">nickName=#{nickName}</if>
-			<if test="loginpwd!=null">loginpwd=#{loginpwd}</if>
-			<if test="salt!=null">salt=#{salt}</if>
-			<if test="phone!=null">phone=#{phone}</if>
-			<if test="status!=null">status=#{status}</if>
-			<if test="wxUnionid!=null">wxUnionid=#{wxUnionid}</if>
+			<if test="nickName!=null">nickName=#{nickName},</if>
+			<if test="loginpwd!=null">loginpwd=#{loginpwd},</if>
+			<if test="salt!=null">salt=#{salt},</if>
+			<if test="phone!=null">phone=#{phone},</if>
+			<if test="status!=null">status=#{status},</if>
+			<if test="wxUnionid!=null">wxUnionid=#{wxUnionid},</if>
 			<if test="updatetime!=null">updatetime=#{updatetime}</if>
 		</set>
 		where id=#{id}
 	</update>
 	
 	<delete id="delUser" parameterType="int">
-			DELETE FROM where id in
-		<foreach item="idItem" collection="array" open="(" separator="," close=")">
-			#{idItem}
+			DELETE FROM users  where id in
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
 		</foreach>
 	</delete>		
 </mapper>

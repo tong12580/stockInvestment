@@ -95,7 +95,22 @@ public class ServiceAction{
     if (map.isEmpty()) return true;
     return false;
   }
-
+  
+  /**
+   * 遍历交易map中的空值
+   * @param reqMap
+   * @return
+   */
+  public static IResult checkParamsEmpty(Map<String, Object> reqMap){
+		
+	  for(Map.Entry<String, Object> map : reqMap.entrySet()){
+		  if(isNull(map.getValue()))
+			  return makerErrResults(map.getKey()+IDefineMsg.LACK_PARAM);
+	  }
+	
+		return makerSusResults(IDefineMsg.CHEACK_SUC);
+  }  
+  
 	/**
 	 * 判断字符串是否只有数字及字母
 	 * @param str
@@ -597,7 +612,7 @@ public class ServiceAction{
 		return rs;
 	}
 	
-	public static IResult makerSusResult(String msg,Object object){
+	public static IResult makerSusResults(String msg,Object object){
 		IResult rs = new Result();
 		
 		rs.setCode(IDefineMsg.CODE_SUCCESS);
@@ -619,7 +634,7 @@ public class ServiceAction{
 		return rs;
 	}
 	
-	public static IResult makerErsResults(String msg){
+	public static IResult makerErrResults(String msg){
 		IResult rs = new Result();
 		rs.setCode(IDefineMsg.CODE_ERROR);
 		rs.setMessage(msg);
@@ -684,7 +699,7 @@ public class ServiceAction{
 	 * @param pwdLength
 	 * @return string
 	 */	
-  public static String getRandomCode(String a, int pwdLength)
+  public static String getRandomCode(int pwdLength)
   {
     int randomNum = getRandomCode(0, pwdLength);
     return valueOf(Integer.valueOf(randomNum));
@@ -706,6 +721,22 @@ public class ServiceAction{
     }
     return a;
   }
+  
+	/**
+	 * 
+	 * @Title: getCode6
+	 * @Description: 获取6位随机数
+	 * @author xiao.he
+	 * @date 2014-9-2 下午07:15:07
+	 * @param @return
+	 * @return int
+	 */
+	public static int getRandomCode6(){
+		int intCount = (new Random()).nextInt(999999);// 最大值位9999
+		if (intCount < 100000)
+			intCount += 100000; // 最小值位10000001
+		return intCount;
+	}
   
   /**
    * 字符转数值
@@ -1105,7 +1136,7 @@ public class ServiceAction{
 		return false;
 	}
 
-	/*
+	/**
 	 * @purpose:calculate the page count using the count and pagesize @params:
 	 * int ,int @return: int
 	 */
@@ -1118,7 +1149,7 @@ public class ServiceAction{
 		return pageCount;
 	}
 
-	/*
+	/**
 	 * @purpose:calculate the page count using the count and pagesize @params:
 	 * int ,int @return: int
 	 */
@@ -1132,7 +1163,7 @@ public class ServiceAction{
 		return pageCount;
 	}
 
-	/*
+	/**
 	 * @purpose:put a List to String use the specified pattern ";" @params: List
 	 * 
 	 * @return: String
@@ -1156,7 +1187,7 @@ public class ServiceAction{
 		}
 	}
 
-	/*
+	/**
 	 * @purpose:put a List to String use the specified pattern @params: List
 	 * 
 	 * @return: String
@@ -1180,7 +1211,7 @@ public class ServiceAction{
 		}
 	}
 
-	/*
+	/**
 	 * @purpose:put a array to a String using the specified pattern ";" @params:
 	 * Object[] @return: String
 	 */
@@ -1204,7 +1235,7 @@ public class ServiceAction{
 		return string;
 	}
 
-	/*
+	/**
 	 * @purpose:put a Object Array to List @params: Object[] @return: List
 	 */
 	public static List arrayToList(Object[] objects) {
@@ -1222,7 +1253,7 @@ public class ServiceAction{
 		return list;
 	}
 
-	/*
+	/**
 	 * @purpose:put a String array to List<Integer> @params: String[] @return:
 	 * List<Integer>
 	 */
@@ -1246,7 +1277,7 @@ public class ServiceAction{
 		return list;
 	}
 
-	/*
+	/**
 	 * @purpose:put a String to List<String> based on the specified pattern ";"
 	 * 
 	 * @params: String @return: List<String>
@@ -1262,7 +1293,13 @@ public class ServiceAction{
 		return list;
 	}
 
-	// 解析输入流成byte数组
+	/**
+	 *  解析输入流成byte数组
+	 * @param inputstream
+	 * @param length
+	 * @return
+	 * @throws Exception
+	 */
 	public static byte[] recvMsg(InputStream inputstream, int length)
 			throws Exception {
 		try {
@@ -1302,7 +1339,7 @@ public class ServiceAction{
 		if (null == phone || "".equals(phone)) {
 			return false;
 		}
-		String regExp = "^1[3,5,8]{1}[0-9]{1}[0-9]{8}$";
+		String regExp =  "^[1][3,5,8][0-9]{9}$";
 		Pattern p = Pattern.compile(regExp);
 		Matcher m = p.matcher(phone);
 		return m.find();
@@ -1567,14 +1604,15 @@ public class ServiceAction{
 	public static IResult checkParamsEmpty(String[] keyParams,HashMap<String,Object> reqMap){ 
 		for (String key : keyParams) {
 			if(isNull(reqMap.get(key))){
-				return makerErsResults("缺少参数["+key+"]");
+				return makerErrResults("缺少参数["+key+"]");
 			}
 			if(isEmpty(valueOf(reqMap.get(key)))){
-				return makerErsResults("参数["+key+"]不能为空");
+				return makerErrResults("参数["+key+"]不能为空");
 			}
 		}
 		return makerSusResults("参数校验通过，继续业务");
 	}
+	
 	
 	/**
 	 * 当前时间

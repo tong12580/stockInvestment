@@ -50,7 +50,7 @@ public class TestController extends ServiceAction{
 		List<BankCard> list =bookDao.findBank();
 		if(isNotEmpty(list))
 			return makerSusResults("查询成功", list);
-		return makerErsResults("查询失败");
+		return makerErrResults("查询失败");
 	}
 	
 	@ResponseBody
@@ -59,8 +59,8 @@ public class TestController extends ServiceAction{
 		
 		BankCard bankCard=CacheBankCard.getInstance().getBankcardByCode("b07");
 		if(isNull(bankCard))	
-			return makerErsResults("查询失败");
-		return makerSusResult("查询成功", bankCard);
+			return makerErrResults("查询失败");
+		return makerSusResults("查询成功", bankCard);
 	}
 	
 	@ResponseBody
@@ -69,8 +69,8 @@ public class TestController extends ServiceAction{
 		
 		BankCard bankCard=CacheBankCard.getInstance().getBankcardByCode("b07");
 		if(isNull(bankCard))	
-			return makerErsResults("查询失败");
-		return makerSusResult("查询成功", bankCard);
+			return makerErrResults("查询失败");
+		return makerSusResults("查询成功", bankCard);
 	}
 	
 }

@@ -19,5 +19,7 @@
     </plugins>
 	<mappers>
 	     <mapper resource="com/stock/mybatis-conf/jikeUser.xml" />
+	     <mapper resource="com/stock/mybatis-conf/user.xml" />
+	     <mapper resource="com/stock/mybatis-conf/userInfo.xml" />
 	</mappers>
 </configuration>

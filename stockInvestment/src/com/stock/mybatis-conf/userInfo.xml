@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.stock.dao.userDao.UserInfoDao">
+
+	<cache readOnly="true" eviction="FIFO" flushInterval="60000"/>
+	
+	<select id="findAllUserInfo" parameterType="page" resultType="java.util.LinkedHashMap" useCache="true">
+		select * from userinfoview
+	</select>
+	
+	<select id="findUserInfo" parameterType="map" resultType="com.stock.pojo.user.Users">
+		select * from userinfoview where userId=#{userId};
+	</select>
+	
+	<insert id="addUserInfo" parameterType="java.util.Map">
+		insert into userinfo (
+			userId,
+			createtime,
+			userType,
+			phoneFlag
+		)values(	
+			#{userId},
+			#{createtime},
+			#{userType},
+			#{phoneFlag}
+		)
+	</insert>
+	
+	<update id="updUserInfo" parameterType="java.util.Map">
+		update userinfo
+		<set>
+			<if test="userName!=null">userName=#{userName},</if>
+			<if test="userImg!=null">userImg=#{userImg},</if>
+			<if test="email!=null">email=#{email},</if>
+			<if test="sex!=null">sex=#{sex},</if>
+			<if test="provinceID!=null">provinceID=#{provinceID},</if>
+			<if test="cityID!=null">cityID=#{cityID},</if>
+			<if test="areaID!=null">areaID=#{areaID},</if>
+			<if test="updatetime!=null">updatetime=#{updatetime},</if>
+			<if test="userType!=null">userType=#{userType},</if>
+			<if test="descs!=null">descs=#{descs},</if>
+			<if test="monthlyRate!=null">monthlyRate=#{monthlyRate},</if>
+			<if test="indexFlag!=null">indexFlag=#{indexFlag}</if>
+		</set>
+		where userId=#{userId}
+	</update>
+	
+	<delete id="delUserInfo" parameterType="int">
+		DELETE FROM userinfo where userId in 
+		<foreach item="userId" collection="array" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</delete>
+	
+	<select id="getProvince" parameterType="map" resultType="java.util.LinkedHashMap" useCache="true">
+		select a.provinceID ,a.province
+		from province a
+		where 1=1
+		<if test="provinceID!=null">
+			and	a.provinceID=#{provinceID}
+		</if>
+	</select>
+	
+	<select id="getCity" parameterType="map" resultType="java.util.LinkedHashMap" useCache="true" >
+		select a.cityID,a.city
+		from city a
+		where a.fatherID=#{provinceID}
+	</select>
+
+	<select id="getAreas" parameterType="map" resultType="java.util.LinkedHashMap" useCache="true" >
+		select a.areaID,a.area
+		from areas a
+		where a.fatherID=#{cityID}
+	</select>
+			
+</mapper>
