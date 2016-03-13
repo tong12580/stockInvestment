@@ -9,7 +9,7 @@ public abstract interface IDefineMsg extends Serializable{
 	/** IResult 正确代码 */
 	public static final String CODE_SUCCESS 						= "1";
 	
-	/**状态标签*/
+	/**状态标签  1可用*/
 	public static final String STATUS								= "1";
 	/**男*/
 	public static final String MAN									= "男";
@@ -88,6 +88,7 @@ public abstract interface IDefineMsg extends Serializable{
 	/**密码格式错误*/
 	public static final String PASSWORD_BY_FORMAT					= "密码格式错误";
 	
+	public static final String PASSWORD_FAIL						= "密码错误";
 	/**两次密码输入不一致*/
 	public static final String PASSWORD_IS_DIFFRENT					= "两次密码输入不一致";
 	

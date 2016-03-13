@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 
 @SuppressWarnings({"rawtypes","unchecked"})
-public class ServiceAction{
+public class ServiceAction extends LogUtil{
 	
 	/**
 	 * 判断对象是否为空
@@ -266,8 +266,8 @@ public class ServiceAction{
         array.add(channelMap);
       }
     } catch (Exception e) {
-      LogUtil.error("======= 拆分 chennal参数异常 =====");
-      LogUtil.error(e.getMessage());
+    	error("======= 拆分 chennal参数异常 =====");
+    	error(e.getMessage());
       return null;
     }
     return array;
@@ -295,8 +295,8 @@ public class ServiceAction{
         array.add(voucherMap);
       }
     } catch (Exception e) {
-      LogUtil.error("======= 拆分 voucher 参数异常 =====");
-      LogUtil.error(e.getMessage());
+      error("======= 拆分 voucher 参数异常 =====");
+      error(e.getMessage());
     }
     return array;
   }
@@ -329,8 +329,8 @@ public class ServiceAction{
       decStrObj = new BigDecimal(strObj);
       decStrObj = decStrObj.setScale(2, RoundingMode.HALF_UP);
     } catch (Exception e) {
-      LogUtil.error(" ===== 非数值转换Bigdecimal异常  ===== ");
-      LogUtil.error(e.getMessage());
+      error(" ===== 非数值转换Bigdecimal异常  ===== ");
+      error(e.getMessage());
     }
     return decStrObj;
   }
@@ -359,8 +359,8 @@ public class ServiceAction{
       decimalAmount = new BigDecimal(amount);
       decimalAmount = decimalAmount.setScale(2, RoundingMode.HALF_UP);
     } catch (Exception e) {
-      LogUtil.error(" ===== 非数值转换Bigdecimal异常  ===== ");
-      LogUtil.error(e.getMessage());
+      error(" ===== 非数值转换Bigdecimal异常  ===== ");
+      error(e.getMessage());
       return null;
     }
     return decimalAmount;
@@ -378,8 +378,8 @@ public class ServiceAction{
       decimalAmount = new BigInteger(amount);
     }
     catch (Exception e) {
-      LogUtil.error(" ===== 非数值转换Bigdecimal异常  ===== ");
-      LogUtil.error(e.getMessage());
+      error(" ===== 非数值转换Bigdecimal异常  ===== ");
+      error(e.getMessage());
     }
     return decimalAmount;
   }
@@ -391,7 +391,7 @@ public class ServiceAction{
 	 */
 	public static boolean isFailOrEmpty(IResult rs){
 		if (!rs.isSuccessful()) return true;
-		List rsList = rs.getResult(0);
+		List<?> rsList = rs.getResult(0);
 		if (rsList.isEmpty()) return true;
 		if (rsList.size() < 1) return true;
 		return false;
@@ -417,7 +417,7 @@ public class ServiceAction{
     }
     catch (Exception e)
     {
-      LogUtil.error(e.getMessage());
+      error(e.getMessage());
     }
     return list;
   }
@@ -431,7 +431,7 @@ public class ServiceAction{
     }
     catch (Exception e)
     {
-      LogUtil.error(e.getMessage());
+      error(e.getMessage());
     }
     return map;
   }
@@ -475,7 +475,7 @@ public class ServiceAction{
 			value = valueOf(rsMap.get(mapKey));
 		} catch (Exception e) {
 			//e.printStackTrace();
-			LogUtil.error("error",e);
+			error("error",e);
 		}
 		return value.trim();
 	}
@@ -493,7 +493,7 @@ public class ServiceAction{
 			Map rsMap = (Map)rsList.get(0);
 			value = valueOf(rsMap.get(mapKey));
 		} catch (Exception e) {
-			LogUtil.error("error",e);
+			error("error",e);
 		}
 		return value.trim();
 	}
@@ -512,7 +512,7 @@ public class ServiceAction{
 			List rsList = rs.getResult(rsIndex);
 			rsMap = (Map)rsList.get(listIndex);
 		} catch (Exception e) {
-			LogUtil.error("error",e);
+			error("error",e);
 		}	
 		return rsMap;
 	}
@@ -531,7 +531,7 @@ public class ServiceAction{
 				rsMap = (Map)rsList.get(0);
 			}
 		} catch (Exception e) {
-			LogUtil.error("error",e);
+			error("error",e);
 		}	
 		return rsMap;
 	}
@@ -561,6 +561,7 @@ public class ServiceAction{
 		rs.setResType(IDefineMsg.WS_TYPE_LISTMAP);
 		rsList.add(rsMap);
 		rs.setResult(rsList);
+		rs.setLengths(rsMap.size());
 		return rs;
 	}
 	/**
@@ -576,6 +577,7 @@ public class ServiceAction{
 		rsMap.put(key, value);
 		rsList.add(rsMap);
 		rs.setResult(rsList);
+		rs.setLengths(IDefineMsg.WS_TYPE_INT);
 		rs.setResType(IDefineMsg.WS_TYPE_LISTMAP);
 		return rs;
 	}
@@ -591,16 +593,20 @@ public class ServiceAction{
 		IResult rs = new Result();
 		rs.setCode(IDefineMsg.CODE_SUCCESS);
 		rs.setMessage(msg);
+		rs.setLengths(IDefineMsg.WS_TYPE_NULL);
 		return rs;
 	}
+	
 	public static IResult makerSusResults(String msg,List list){
 		IResult rs = new Result();
 		rs.setCode(IDefineMsg.CODE_SUCCESS);
 		rs.setMessage(msg);
 		rs.setResType(IDefineMsg.WS_TYPE_LISTMAP);
 		rs.setResult(list);
+		rs.setLengths(list.size());
 		return rs;
 	}
+	
 	public static IResult makerSusResults(String msg,Map rsMap){
 		IResult rs = new Result();
 		List list = new ArrayList();
@@ -608,6 +614,7 @@ public class ServiceAction{
 		rs.setCode(IDefineMsg.CODE_SUCCESS);
 		rs.setMessage(msg);
 		rs.setResType(IDefineMsg.WS_TYPE_LISTMAP);
+		rs.setLengths(rsMap.size());
 		rs.setResult(list);
 		return rs;
 	}
@@ -619,7 +626,7 @@ public class ServiceAction{
 		rs.setMessage(msg);
 		rs.setResType(IDefineMsg.WS_TYPE_OBJECT);
 		rs.setResult(object);
-		
+		rs.setLengths(IDefineMsg.WS_TYPE_INT);
 		return rs;
 	}
 	
@@ -630,6 +637,7 @@ public class ServiceAction{
 		rs.setCode(IDefineMsg.CODE_ERROR);
 		rs.setMessage(msg);
 		rs.setResType(IDefineMsg.WS_TYPE_LISTMAP);
+		rs.setLengths(rsMap.size());
 		rs.setResult(list);
 		return rs;
 	}
@@ -644,6 +652,7 @@ public class ServiceAction{
 	public static IResult makerResults(IResult rs,List rsList){
 		rs.setResult(rsList);
 		rs.setResType(IDefineMsg.WS_TYPE_LISTMAP);
+		rs.setLengths(rsList.size());
 		return rs;
 	}
 
@@ -737,6 +746,22 @@ public class ServiceAction{
 			intCount += 100000; // 最小值位10000001
 		return intCount;
 	}
+	
+	/**
+	 * 随机数
+	 * @param n
+	 * @return
+	 */
+	 public static String getRandStr(int n)
+	  {
+	    Random random = new Random();
+	    String sRand = "";
+	    for (int i = 0; i < n; i++) {
+	      String rand = String.valueOf(random.nextInt(10));
+	      sRand = sRand + rand;
+	    }
+	    return sRand;
+	  }
   
   /**
    * 字符转数值
@@ -791,44 +816,58 @@ public class ServiceAction{
 	 * @param macroDefine 宏定义（正则表达式）
 	 * @return boolean
 	 */  
-  public static boolean regExpCheck(String params, String macroDefine)
-  {
-    return params.matches(macroDefine);
-  }
+	  public static boolean regExpCheck(String params, String macroDefine)
+	  {
+	    return params.matches(macroDefine);
+	  }
 
-  public static String getRandStr(int n)
-  {
-    Random random = new Random();
-    String sRand = "";
-    for (int i = 0; i < n; i++) {
-      String rand = String.valueOf(random.nextInt(10));
-      sRand = sRand + rand;
-    }
-    return sRand;
-  }
   
-  public static java.util.Date addYear(java.util.Date date, int year) {
+  /**
+   * 加一年
+   * @param date
+   * @param year
+   * @return
+   */
+  public static Date addYear(Date date, int year) {
 		GregorianCalendar gdate = new GregorianCalendar();
 		gdate.setTime(date);
 		gdate.add(GregorianCalendar.YEAR, year);
 		return gdate.getTime();
 	}
-
-	public static java.util.Date addMonth(java.util.Date date, int month) {
+  
+	/**
+	 * 加一月
+	 * @param date
+	 * @param month
+	 * @return
+	 */
+	public static Date addMonth(Date date, int month) {
 		GregorianCalendar gdate = new GregorianCalendar();
 		gdate.setTime(date);
 		gdate.add(GregorianCalendar.MONTH, month);
 		return gdate.getTime();
 	}
-
-	public static java.util.Date addDay(java.util.Date date, int day) {
+	
+	/**
+	 * 加一日 
+	 * @param date
+	 * @param day
+	 * @return
+	 */
+	public static Date addDay(Date date, int day) {
 		GregorianCalendar gdate = new GregorianCalendar();
 		gdate.setTimeInMillis(date.getTime());
 		gdate.add(GregorianCalendar.DAY_OF_MONTH, day);
 		return gdate.getTime();
 	}
-
-	public static java.util.Date addSecond(java.util.Date date, int second) {
+	
+	/**
+	 * 分钟
+	 * @param date
+	 * @param second
+	 * @return
+	 */
+	public static Date addSecond(Date date, int second) {
 		GregorianCalendar gdate = new GregorianCalendar();
 		gdate.setTimeInMillis(date.getTime());
 		gdate.add(GregorianCalendar.SECOND, second);
@@ -838,9 +877,9 @@ public class ServiceAction{
 	/**
 	 * @Title: formatDate
 	 * @Description: 获取指定格式日期字符串
-	 * @param @param date
-	 * @param @param patter
-	 * @param @return
+	 * @param  date
+	 * @param  patter
+	 * @param  
 	 * @return String
 	 */
 	public static String formatDate(Date date, String patter) {
@@ -855,8 +894,7 @@ public class ServiceAction{
 	/**
 	 * @Title: formatDate
 	 * @Description: 按默认格式格式化时间
-	 * @param @param date
-	 * @param @return
+	 * @param  date
 	 * @return String
 	 */
 	public static String formatDate(Date date) {
@@ -870,7 +908,6 @@ public class ServiceAction{
 
 	/**
 	 * 按照指定的格式来解析字符串成为时间
-	 * 
 	 * @param date
 	 * @param patter
 	 * @return
@@ -889,8 +926,7 @@ public class ServiceAction{
 	/**
 	 * @Title: parseDate
 	 * @Description: 按默认格式解析时间
-	 * @param @param strDate
-	 * @param @return
+	 * @param  strDate
 	 * @return Date
 	 */
 	public static Date parseDate(String strDate) {
@@ -906,7 +942,6 @@ public class ServiceAction{
 
 	/**
 	 * 获得现在的时间(格式:yyyy-MM-dd)
-	 * 
 	 * @return
 	 */
 	public static Date getNow() {
@@ -931,7 +966,6 @@ public class ServiceAction{
 
 	/**
 	 * 计算两个时间相差的天数
-	 * 
 	 * @param date1
 	 * @param date2
 	 * @return
@@ -952,9 +986,8 @@ public class ServiceAction{
 	/**
 	 * @Title: getTimestamp
 	 * @Description: 获取1-2的时间差，单位为ms
-	 * @param @param time1
-	 * @param @param time2
-	 * @param @return
+	 * @param time1
+	 * @param time2
 	 * @return int
 	 */
 	public static int getTimestamp(Date time1, Date time2) {
@@ -973,8 +1006,8 @@ public class ServiceAction{
 	/**
 	 * @Title: getWeekTimesBE
 	 * @Description: 获取一周的起止时间
-	 * @param @param offset 星期偏移量，0为本周，-1为上周，1为下周，如此类推
-	 * @param @return date[0]：开始时间，格式2012-03-04
+	 * @param offset 星期偏移量，0为本周，-1为上周，1为下周，如此类推
+	 * @param  date[0]：开始时间，格式2012-03-04
 	 *        00:00:00；date[1]：结束时间，格式2012-03-10 23:59:59；异常为null
 	 * @return Date[]
 	 */
@@ -1068,7 +1101,7 @@ public class ServiceAction{
 	 * @param @return
 	 * @return boolean
 	 */
-	public static boolean isNotEmpty(List list) {
+	public static boolean isNotEmpty(List<?> list) {
 		boolean returnBoolean = false;
 		if (list != null && list.size() > 0) {
 			returnBoolean = true;
@@ -1168,7 +1201,7 @@ public class ServiceAction{
 	 * 
 	 * @return: String
 	 */
-	public static String listToString(List list) {
+	public static String listToString(List<?> list) {
 		StringBuffer stringBuffer = new StringBuffer();
 
 		if (isNotEmpty(list)) {
@@ -1192,7 +1225,7 @@ public class ServiceAction{
 	 * 
 	 * @return: String
 	 */
-	public static String listToString(List list, String pattern) {
+	public static String listToString(List<?> list, String pattern) {
 		StringBuffer stringBuffer = new StringBuffer();
 
 		if (isNotEmpty(list)) {
@@ -1364,12 +1397,12 @@ public class ServiceAction{
 	/**
 	 * @Title: parseListToString
 	 * @Description: 列表转换为字符串
-	 * @param @param list 要转换的对象
-	 * @param @param split 分隔符
-	 * @param @return
+	 * @param  list 要转换的对象
+	 * @param  split 分隔符
+	 * @param 
 	 * @return String
 	 */
-	public static String parseListToString(List list, String split) {
+	public static String parseListToString(List<?> list, String split) {
 		if (list != null && list.size() > 0) {
 			String str = "";
 			int len = list.size();
@@ -1384,13 +1417,12 @@ public class ServiceAction{
 		}
 		return null;
 	}
-
+	
 	/**
 	 * @Title: pasreArrayToString
 	 * @Description: 数组转字符串
-	 * @param @param arr
-	 * @param @param split
-	 * @param @return
+	 * @param   arr
+	 * @param   split  
 	 * @return String
 	 */
 	public static String pasreArrayToString(Object[] arr, String split) {
@@ -1411,8 +1443,7 @@ public class ServiceAction{
 	/**
 	 * @Title: getFileSuffix
 	 * @Description: 获取文件后缀，返回如：.jpg
-	 * @param @param name
-	 * @param @return
+	 * @param   name
 	 * @return String
 	 */
 	public static String getFileSuffix(String name) {
@@ -1426,7 +1457,6 @@ public class ServiceAction{
 	/**
 	 * @Title: getTimeFileName
 	 * @Description: 获取默认的以是时间命名的文件名
-	 * @param @return
 	 * @return String
 	 */
 	public static String getTimeFileName(String suffix) {
@@ -1437,7 +1467,6 @@ public class ServiceAction{
 	 * @Title: getAgeByBirthday
 	 * @Description: 计算年龄
 	 * @param @param birthday
-	 * @param @return
 	 * @return String
 	 */
 	public static String getAgeByBirthday(Date birthday) {
@@ -1459,7 +1488,7 @@ public class ServiceAction{
 	/**
 	 * @Title: deleteFile
 	 * @Description: 删除文件或文件夹
-	 * @param @param realPath
+	 * @param  realPath
 	 * @return void
 	 */
 	public static void deleteFile(String realPath) {
@@ -1480,8 +1509,7 @@ public class ServiceAction{
 	/**
 	 * @Title: getFileSize
 	 * @Description: 根据路径获取文件大小
-	 * @param @param path
-	 * @param @return
+	 * @param  path
 	 * @return long
 	 */
 	public static long getFileSize(String path) {
@@ -1495,7 +1523,7 @@ public class ServiceAction{
 	/**
 	 * @Title: makeDir
 	 * @Description: 创建目录，如果存在则不创建
-	 * @param @param path
+	 * @param  path
 	 * @return void
 	 */
 	public static boolean makeDir(String path) {
@@ -1552,6 +1580,11 @@ public class ServiceAction{
 		}
 	}
 	
+	/**
+	 * basePath路径
+	 * @param request
+	 * @return
+	 */
 	public static String getServerPath(HttpServletRequest request){
 	  	String basePath = request.getSession().getServletContext().getRealPath("/");
 	  	return basePath;
@@ -1585,32 +1618,14 @@ public class ServiceAction{
 		      bos.flush();  
 		      bos.close();
 		} catch (MalformedURLException e) {
-			LogUtil.error(e.getMessage());
+			error(e.getMessage());
 			return null;
 		} catch (IOException e) {
-			LogUtil.error(e.getMessage());
+			error(e.getMessage());
 			return null;
 		}
 		
 		return imgUrl;
-	}
-	
-	/**
-	 * 校验入参是否缺少，是否为空
-	 * @param keyParams 入参名称，字符串数组
-	 * @param reqMap	传入的参数
-	 * @return
-	 */
-	public static IResult checkParamsEmpty(String[] keyParams,HashMap<String,Object> reqMap){ 
-		for (String key : keyParams) {
-			if(isNull(reqMap.get(key))){
-				return makerErrResults("缺少参数["+key+"]");
-			}
-			if(isEmpty(valueOf(reqMap.get(key)))){
-				return makerErrResults("参数["+key+"]不能为空");
-			}
-		}
-		return makerSusResults("参数校验通过，继续业务");
 	}
 	
 	

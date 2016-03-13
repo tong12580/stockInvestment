@@ -19,7 +19,7 @@ import com.stock.pojo.user.Users;
 import com.stock.service.users.interfaces.UserService;
 
 @Controller
-@RequestMapping(value="/register")
+@RequestMapping(value="/web")
 public class LoginController extends RootController{
 	
 	@Autowired
@@ -34,7 +34,7 @@ public class LoginController extends RootController{
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/users" , method =RequestMethod.POST)
+	@RequestMapping(value="/register" , method =RequestMethod.POST)
 	public IResult registerUser(HttpServletResponse response, HttpServletRequest request,
 			String phone, String phoneCode, String loginPwd,String pwdtwo){
 		
@@ -98,18 +98,51 @@ public class LoginController extends RootController{
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/nickname",method=RequestMethod.POST)
-	public IResult updUserInfo(HttpServletResponse response, HttpServletRequest request,
-			String nickName,String email,String sex,String provinceID){
+	@RequestMapping(value="/upd/userinfo",method=RequestMethod.POST)
+	public IResult updUserInfo( HttpServletRequest request,String userName,
+			String email,String sex,String provinceID,
+			String cityID,String areaID,String descs){
 		
-		IResult rs	=	null;
-		Users users =	getUser(request, response);
+		Users users =	getUser(request);
 		
 		if(isNull(users))
 			return makerErrResults(IDefineMsg.LONGIN_PREASE);
 		
+		Map<String, Object> reqMap =new HashMap<String, Object>();
+		reqMap.put("userId"		, users.getUserId());
+		reqMap.put("userName"	, userName);
+		reqMap.put("email"		, email);
+		reqMap.put("sex"		, sex);
+		reqMap.put("provinceID"	, provinceID);
+		reqMap.put("cityID"		, cityID);
+		reqMap.put("areaID"		, areaID);
+		reqMap.put("descs"		, descs);
+		reqMap.put("updatetime"	, getCurDatetime());
 		
+		IResult rs	=	userService.updUserInfo(reqMap);
+		return rs;
+	}
+	
+	/**
+	 * 修改昵称
+	 * @param request
+	 * @param nickName
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="/upd/nickName",method=RequestMethod.PUT)
+	public IResult updNickName( HttpServletRequest request,String nickName){
 		
+		Users users =	getUser(request);
+		if(isNull(users))
+			return makerErrResults(IDefineMsg.LONGIN_PREASE);
+		
+		Map<String, Object> reqMap =new HashMap<String,Object>();
+		reqMap.put("id"			, users.getUserId());
+		reqMap.put("nickName"	, nickName);
+		reqMap.put("updatetime"	, getCurDatetime());
+		
+		IResult rs = userService.updNickName(reqMap);
 		return rs;
 	}
 	
@@ -119,36 +152,57 @@ public class LoginController extends RootController{
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/lpassword",method=RequestMethod.POST)
-	public IResult updLoginPWD(String loginPwd){
+	@RequestMapping(value="/upd/lpassword",method=RequestMethod.POST)
+	public IResult updLoginPWD(HttpServletRequest request,String loginPwd,
+			String newpassword ,String passwordtwo){
 		
-		IResult rs=null;
+		Users users =	getUser(request);
+		if(isNull(users))
+			return makerErrResults(IDefineMsg.LONGIN_PREASE);
 		
+		Map<String, Object> reqMap =new HashMap<String,Object>();
+		reqMap.put("loginPwd"	, loginPwd);
+		reqMap.put("newpassword", newpassword);
+		reqMap.put("passwordtwo", passwordtwo);
+		reqMap.put("phone"		, users.getPhone());
+		
+		IResult rs=userService.updLoginPwd(reqMap);
 		return rs;
 	}
 	
 	/**
 	 * 修改交易密码
-	 * @param nickName
+	 * @param tradePassword
+	 * @param phoneCode
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/apassword",method=RequestMethod.POST)
-	public IResult updAccountPWD(String accountPWD,String phoneCode){
+	@RequestMapping(value="/upd/apassword",method=RequestMethod.POST)
+	public IResult updAccountPWD(HttpServletRequest request,
+			String tradePassword,String phoneCode){
 		
-		IResult rs=null;
+		Users users =	getUser(request);
+		if(isNull(users))
+			return makerErrResults(IDefineMsg.LONGIN_PREASE);
 		
+		Map<String, Object> reqMap =new HashMap<String,Object>();
+		reqMap.put("tradePassword"	, tradePassword);
+		reqMap.put("phoneCode"		, phoneCode);
+		reqMap.put("phone"			, users.getPhone());
+		reqMap.put("userId"			, users.getUserId());
+		
+		IResult rs	=	userService.updTradersPassword(reqMap); 
 		return rs;
 	}
 	
 	
 	/**
-	 * 修改交易密码
+	 * 修改头像
 	 * @param nickName
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/img",method=RequestMethod.POST)
+	@RequestMapping(value="/upd/img",method=RequestMethod.POST)
 	public IResult updImg(String img){
 		IResult rs =null;
 		return rs;

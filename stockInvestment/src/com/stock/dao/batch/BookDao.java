@@ -1,4 +1,4 @@
-package com.stock.dao;
+package com.stock.dao.batch;
 
 import java.util.List;
 import java.util.Map;

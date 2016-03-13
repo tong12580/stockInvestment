@@ -14,7 +14,7 @@ import com.stock.cache.CacheBankCard;
 import com.stock.common.mybatis.Page;
 import com.stock.common.util.response.IResult;
 import com.stock.common.util.response.ServiceAction;
-import com.stock.dao.BookDao;
+import com.stock.dao.batch.BookDao;
 import com.stock.pojo.BankCard;
 
 @Controller

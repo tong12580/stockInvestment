@@ -5,15 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 
 import com.stock.common.util.SpringContextUtil;
-import com.stock.dao.BookDao;
+import com.stock.dao.batch.BookDao;
 import com.stock.pojo.BankCard;
 
 public class CacheBankCard extends AbstractCacheBase {
 	
-	private Logger logger = Logger.getLogger(CacheBankCard.class);
 	
 	private static CacheBankCard instance = new CacheBankCard();
 	
@@ -58,7 +56,7 @@ public class CacheBankCard extends AbstractCacheBase {
 			bankcardIdMap.put(bankcard.getId(), bankcard);
 		}
 		
-		logger.info("CacheBankCard init complete:" + bankcardIdMap.size());
+		info("CacheBankCard init complete:" + bankcardIdMap.size());
 	}
 
 	@Override

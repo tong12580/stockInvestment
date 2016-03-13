@@ -3,6 +3,8 @@ package com.stock.cache;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.stock.common.util.response.LogUtil;
+
 /**
  * @ClassName:AbstractCacheBase  
  * @author yutong
@@ -10,7 +12,7 @@ import java.util.Map;
  * @since 2016/03/08
  * @version 1.0
  */
-public abstract class AbstractCacheBase {
+public abstract class AbstractCacheBase extends LogUtil{
 	
 	public Map<Object, Object> map = new HashMap<Object, Object>();
 	

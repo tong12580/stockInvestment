@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.stock.common.RedisUtils;
+import com.stock.common.SendSMSUtil;
 import com.stock.common.SessionUtil;
 import com.stock.common.util.response.IDefineMsg;
 import com.stock.common.util.response.ServiceAction;
@@ -47,19 +48,28 @@ public class RootController extends ServiceAction{
 	 * @Description: 获取用户信息
 	 * @author xiao.he
 	 * @date 2015-9-13 下午09:39:00
-	 * @param @param request
-	 * @param @param response
-	 * @param @return
+	 * @param request
+	 * @param response
 	 * @return User
 	 */
-	protected Users getUser(HttpServletRequest request,HttpServletResponse response){
+	protected Users getUser(HttpServletRequest request){
 		Users user = null;
 		try {
 			user = SessionUtil.getSessionAttribute(request,IDefineMsg.ADMIN_USER_KEY);
 		} catch (Exception e) {
-			e.printStackTrace();
+			error(e.getMessage());
+			return null;
 		}
-		
 		return user;
+	}
+	
+	/**
+	 * @Title: mobileMsg
+	 * @Description:发送短信验证码
+	 * @param phone
+	 * @param msg
+	 */
+	protected boolean mobileMsg(String phone, String msg){
+		return 	SendSMSUtil.sendMessage(phone, msg);
 	}
 }

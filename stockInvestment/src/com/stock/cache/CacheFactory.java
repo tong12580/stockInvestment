@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.apache.log4j.Logger;
+import com.stock.common.util.response.LogUtil;
 
 
 /**
@@ -14,9 +14,7 @@ import org.apache.log4j.Logger;
  * @author guosheng.zhu
  * @date 2016-03-08 下午04:55:35
  */
-public class CacheFactory {
-	
-	private static Logger logger = Logger.getLogger(CacheFactory.class);
+public class CacheFactory extends LogUtil{
 	
 	private static Map<Object, Object> map = new HashMap<Object, Object>();
 	
@@ -36,12 +34,12 @@ public class CacheFactory {
 					long longs=System.currentTimeMillis();
 					CacheBankCard.getInstance().init();
 					longs=System.currentTimeMillis()-longs;
-					logger.info("初始化加载12-->"+longs);
+					info("初始化加载12-->"+longs);
 				}
 			}, 2000);
 			
 		} catch (Exception e) {
-			logger.error(e.getMessage());
+			error(e.getMessage());
 		}
 	}
 	

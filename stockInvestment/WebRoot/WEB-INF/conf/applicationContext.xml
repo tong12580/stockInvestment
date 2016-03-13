@@ -27,20 +27,21 @@
 	<!-- servlet扫描 -->
 	<mvc:default-servlet-handler/> 
 	<!-- 注解扫描 -->  
-    <mvc:annotation-driven>
-        <mvc:message-converters register-defaults="false">
-            <bean id="fastJsonHttpMessageConverter" class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
-                <property name="supportedMediaTypes">
-                    <list>
-                        <value>text/html;charset=UTF-8</value>
-                        <value>application/json;charset=UTF-8</value>
-                    </list>
-                </property>
-            </bean>
-        </mvc:message-converters>
-    </mvc:annotation-driven>
+	  <mvc:annotation-driven>
+		        <mvc:message-converters register-defaults="false">
+		            <bean id="fastJsonHttpMessageConverter" class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+		                <property name="supportedMediaTypes">
+		                    <list>
+		                        <value>text/html;charset=UTF-8</value>
+		                        <value>application/json;charset=UTF-8</value>
+		                    </list>
+		                </property>
+		            </bean>
+		        </mvc:message-converters>
+		    </mvc:annotation-driven>
 	
 	<context:component-scan base-package="com.stock"/>
+
     <context:property-placeholder location="classpath*:jdbc.properties, classpath*:redis.properties" />
     
     <!-- 开启定时任务 -->
@@ -65,7 +66,7 @@
     
     <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
        <constructor-arg index="0" ref="sqlSessionFactory" />
-       <!-- 这个执行器会批量执行更新语句, 还有SIMPLE 和 REUSE -->
+       <!-- 这个执行器会更新语句, 还有SIMPLE 和 REUSE -->
        <constructor-arg index="1" value="SIMPLE"/>  
     </bean>
     
@@ -76,12 +77,21 @@
    </bean>
        
  	 <!-- 扫描basePackage接口 -->
-   <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+   <bean id="mybatisSimpleMapper" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
     	<property name="annotationClass" value="org.springframework.stereotype.Repository" />
     	<property name="sqlSessionTemplateBeanName" value="sqlSessionTemplate" />
     	<!-- 映射器接口文件的包路径， -->
-       <property name="basePackage" value="com.stock.dao" />
+       <property name="basePackage" value="com.stock.dao.simple" />
    </bean>
+   
+ 	 <!-- 扫描basePackage接口 -->
+   <bean id="mybatisBatchMapper" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+    	<property name="annotationClass" value="org.springframework.stereotype.Repository" />
+    	<property name="sqlSessionTemplateBeanName" value="sqlSessionTemplateBatch" />
+    	<!-- 映射器接口文件的包路径， -->
+       <property name="basePackage" value="com.stock.dao.batch" />
+   </bean>   
+   
 	<!-- 使用annotation定义事务 -->
     <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"></property>

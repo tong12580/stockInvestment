@@ -38,11 +38,18 @@ public interface UserService {
 	public IResult addUsers(Map<String, Object> reqMap);
 	
 	/**
-	 * 修改昵称
+	 * 修改用户资料
 	 * @param nickName
 	 * @return
 	 */
 	public IResult updUserInfo(Map<String, Object> reqMap);
+	
+	/**
+	 * 修改昵称
+	 * @param reqMap
+	 * @return
+	 */
+	public IResult updNickName(Map<String, Object> reqMap);
 	
 	/**
 	 * 修改登录密码

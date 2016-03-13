@@ -1,5 +1,6 @@
 package com.stock.service.users.implementation;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,8 +15,8 @@ import com.stock.common.util.Encryption;
 import com.stock.common.util.response.IDefineMsg;
 import com.stock.common.util.response.IResult;
 import com.stock.common.util.response.ServiceAction;
-import com.stock.dao.userDao.UserDao;
-import com.stock.dao.userDao.UserInfoDao;
+import com.stock.dao.simple.userDao.UserDao;
+import com.stock.dao.simple.userDao.UserInfoDao;
 import com.stock.pojo.user.Users;
 import com.stock.service.users.interfaces.UserService;
 
@@ -50,8 +51,7 @@ public class UserServiceImpl extends ServiceAction implements UserService{
 		
 		IResult rs 	=	null;
 		rs			=	checkParamsEmpty(reqMap);
-		if(!rs.isSuccessful())
-			return rs;
+		if(!rs.isSuccessful()) return rs;
 		
 		String loginPwd =	valueOf(reqMap.get("loginPwd"));
 		String pwdtwo	=	valueOf(reqMap.get("pwdtwo"));
@@ -68,10 +68,13 @@ public class UserServiceImpl extends ServiceAction implements UserService{
 		String salt	= getShortUUid(); //密串
 		loginPwd	= Encryption.md5s(loginPwd+salt);
 		
+		String nickName = "GP_"+getShortUUid();
+		
 		reqMap.put("loginPwd"	, loginPwd);
 		reqMap.put("salt"		, salt);
 		reqMap.put("status"		, 1);
 		reqMap.put("createtime"	, getCurDatetime());
+		reqMap.put("nickName"	, nickName);
 		
 		return makerSusResults(IDefineMsg.CHEACK_SUC);
 	}
@@ -101,23 +104,78 @@ public class UserServiceImpl extends ServiceAction implements UserService{
 
 	@Override
 	public IResult updLoginPwd(Map<String, Object> reqMap) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		IResult rs	=	checkParamsEmpty(reqMap);
+		if(!rs.isSuccessful()) return rs;
+		
+		List<Map<String, Object>> usersList =userDao.getUser(reqMap); 
+		String oldLoginpwd		= getListMapValue(usersList, "loginpwd");
+		String oldSalt			= getListMapValue(usersList, "salt");
+		String id				= getListMapValue(usersList, "id");
+		
+		String loginPwd			= valueOf(reqMap.get("loginPwd"));
+		String newPassword		= valueOf(reqMap.get("newpassword"));
+		String passwordtwo		= valueOf(reqMap.get("passwordtwo"));
+		loginPwd				= Encryption.md5s(loginPwd+oldSalt);
+		
+		if(!loginPwd.equals(oldLoginpwd))
+			return makerErrResults(IDefineMsg.PASSWORD_FAIL);
+		if(!isNumChar(newPassword))
+			return makerErrResults(IDefineMsg.PASSWORD_BY_FORMAT+"登录密码不能为纯数字或字母");
+		if(!newPassword.equals(passwordtwo))
+			return makerErrResults(IDefineMsg.PASSWORD_IS_DIFFRENT);
+		
+		String salt	= getShortUUid();
+		loginPwd	= Encryption.md5s(newPassword+salt);
+		
+		Map<String, Object> rsMap =new HashMap<String, Object>(); 
+		
+		rsMap.put("loginPwd"	, loginPwd);
+		rsMap.put("salt"		, salt);
+		rsMap.put("id"			, id);
+		rsMap.put("updatetime"	, getCurDatetime());
+		
+		int flag	=	userDao.updUser(rsMap);
+		if(flag<0)
+			return makerErrResults(IDefineMsg.UPD_FAIL);
+		return makerSusResults(IDefineMsg.UPD_SUCCESS);
 	}
 
 	@Override
 	public IResult updTradersPassword(Map<String, Object> reqMap) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		IResult rs 			=	checkParamsEmpty(reqMap);
+		if(!rs.isSuccessful()) return rs;
+		
+		String phone		=	valueOf(reqMap.get("phone"));
+		String tradePassword=	valueOf(reqMap.get("tradePassword"));
+		String phoneCode	=	valueOf(reqMap.get("phoneCode"));
+		String userId		=	valueOf(reqMap.get("userId"));
+		Object redisCode	=	RedisUtils.get(IDefineMsg.PHONE_CODE_INFO+phone);
+		
+		if(!phoneCode.equals(redisCode))
+			return makerErrResults(IDefineMsg.PHONE_CODE_IS_FAIL);
+		
+		String	tradeSalt	=	getShortUUid();
+		tradePassword		=	Encryption.md5s(tradePassword+tradeSalt);
+		
+		Map<String, Object> rsMap	=	new	HashMap<String, Object>();
+		rsMap.put("tradeSalt"		, tradeSalt);
+		rsMap.put("tradePassword"	, tradePassword);
+		rsMap.put("id"				, userId);
+		rsMap.put("updatetime"		, getCurDatetime());
+		int flag	=	userDao.updUser(rsMap);
+		
+		if(flag<0)
+			return makerErrResults(IDefineMsg.UPD_FAIL);
+		return makerSusResults(IDefineMsg.UPD_SUCCESS);
 	}
 
 	@Override
 	public IResult checkUserLegal(Map<String, Object> reqMap) {
 		
-		IResult rs 	=	null;
-		rs			=	checkParamsEmpty(reqMap);
-		if(!rs.isSuccessful())
-			return rs;
+		IResult rs		=	checkParamsEmpty(reqMap);
+		if(!rs.isSuccessful()) return rs;
 		
 		List<Map<String, Object>> user=userDao.getUser(reqMap);
 		if(isNull(user))
@@ -145,8 +203,26 @@ public class UserServiceImpl extends ServiceAction implements UserService{
 
 	@Override
 	public IResult updUserInfo(Map<String, Object> reqMap) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		int flg		=	userInfoDao.updUserInfo(reqMap);
+		if(flg<0)
+			return makerErrResults(IDefineMsg.UPD_FAIL);
+		
+		return makerSusResults(IDefineMsg.UPD_SUCCESS);
+	}
+
+	@Override
+	public IResult updNickName(Map<String, Object> reqMap) {
+
+		IResult rs			=	checkParamsEmpty(reqMap);
+		if(!rs.isSuccessful())
+			return rs;
+		
+		int flg		= userDao.updUser(reqMap);
+		if(flg<0)
+			return makerErrResults(IDefineMsg.UPD_FAIL);
+		
+		return makerSusResults(IDefineMsg.UPD_SUCCESS);
 	}
 	
 }
