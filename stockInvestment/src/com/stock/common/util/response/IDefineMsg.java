@@ -87,14 +87,15 @@ public abstract interface IDefineMsg extends Serializable{
 	
 	/**密码格式错误*/
 	public static final String PASSWORD_BY_FORMAT					= "密码格式错误";
-	
+	/**密码错误*/
 	public static final String PASSWORD_FAIL						= "密码错误";
 	/**两次密码输入不一致*/
 	public static final String PASSWORD_IS_DIFFRENT					= "两次密码输入不一致";
 	
 	/** 用户缓存信息*/
 	public static final String ADMIN_USER_KEY						= "ADMIN_USER_KEY";
-	
+	/** 用户缓存信息key*/
+	public static final String USER_KEY 							= "user_key";
 	
 	
 	

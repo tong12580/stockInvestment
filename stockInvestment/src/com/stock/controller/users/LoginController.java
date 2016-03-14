@@ -179,22 +179,44 @@ public class LoginController extends RootController{
 	@ResponseBody
 	@RequestMapping(value="/upd/apassword",method=RequestMethod.POST)
 	public IResult updAccountPWD(HttpServletRequest request,
-			String tradePassword,String phoneCode){
+			String tradePassword,String tradePasswordtwo,String phoneCode){
 		
 		Users users =	getUser(request);
 		if(isNull(users))
 			return makerErrResults(IDefineMsg.LONGIN_PREASE);
 		
 		Map<String, Object> reqMap =new HashMap<String,Object>();
-		reqMap.put("tradePassword"	, tradePassword);
-		reqMap.put("phoneCode"		, phoneCode);
-		reqMap.put("phone"			, users.getPhone());
-		reqMap.put("userId"			, users.getUserId());
+		reqMap.put("tradePassword"		, tradePassword);
+		reqMap.put("phoneCode"			, phoneCode);
+		reqMap.put("phone"				, users.getPhone());
+		reqMap.put("userId"				, users.getUserId());
+		reqMap.put("tradePasswordtwo"	, tradePasswordtwo);
 		
 		IResult rs	=	userService.updTradersPassword(reqMap); 
 		return rs;
 	}
 	
+	/**
+	 * 忘记密码
+	 * @param phone
+	 * @param phoneCode
+	 * @param loginPwd
+	 * @param pwdtwo
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="/forget/password",method=RequestMethod.POST)
+	public IResult	forgetPassword(String phone, String phoneCode, String loginPwd,String pwdtwo){
+		
+		Map<String, Object> reqMap	=	new	HashMap<String, Object>();
+		reqMap.put("phone"		, phone);
+		reqMap.put("phoneCode"	, phoneCode);
+		reqMap.put("loginPwd"	, loginPwd);
+		reqMap.put("pwdtwo"		, pwdtwo);
+		
+		IResult rs	=	userService.forgetPassWord(reqMap);
+		return rs;
+	}
 	
 	/**
 	 * 修改头像
@@ -204,7 +226,8 @@ public class LoginController extends RootController{
 	@ResponseBody
 	@RequestMapping(value="/upd/img",method=RequestMethod.POST)
 	public IResult updImg(String img){
-		IResult rs =null;
+		IResult rs =	null;
+		//TODO
 		return rs;
 	}
 	
@@ -217,7 +240,58 @@ public class LoginController extends RootController{
 	@RequestMapping(value="/phone",method=RequestMethod.POST)
 	public IResult getPhoneCode(String phone){
 		
-		IResult rs =userService.getPhoneCode(phone);
+		IResult rs =	userService.getPhoneCode(phone);
+		return rs;
+	}
+	
+	/**
+	 * 获取所有省
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="/province")
+	public IResult getAllProvince(){
+		
+		IResult rs =userService.getProvince();
+		return rs;
+	}
+	
+	/**
+	 * 省属市
+	 * @param provinceID
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="/city")
+	public IResult getCity(String provinceID){
+		Map<String, Object> reqMap =new HashMap<String, Object>();
+		reqMap.put("provinceID", provinceID);
+		IResult rs	=	userService.getCity(reqMap);
+		return rs;
+	}
+	
+	/**
+	 * 市属县
+	 * @param cityID
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="/areas")
+	public IResult getAreas(String cityID){
+		Map<String, Object> reqMap =new HashMap<String, Object>();
+		reqMap.put("cityID",cityID);
+		IResult rs	=	userService.getAreas(reqMap);
+		return rs;
+	}
+	
+	/**
+	 * 获取所有银行卡信息
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping(value="/allbankno")
+	public	IResult getAllBankNo(){
+		IResult rs =	userService.getBankNo();
 		return rs;
 	}
 	

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.stock.cache.CacheBankCard;
 import com.stock.common.RedisUtils;
 import com.stock.common.SendSMSUtil;
 import com.stock.common.util.Encryption;
@@ -17,6 +18,7 @@ import com.stock.common.util.response.IResult;
 import com.stock.common.util.response.ServiceAction;
 import com.stock.dao.simple.userDao.UserDao;
 import com.stock.dao.simple.userDao.UserInfoDao;
+import com.stock.pojo.BankCard;
 import com.stock.pojo.user.Users;
 import com.stock.service.users.interfaces.UserService;
 
@@ -147,14 +149,17 @@ public class UserServiceImpl extends ServiceAction implements UserService{
 		IResult rs 			=	checkParamsEmpty(reqMap);
 		if(!rs.isSuccessful()) return rs;
 		
-		String phone		=	valueOf(reqMap.get("phone"));
-		String tradePassword=	valueOf(reqMap.get("tradePassword"));
-		String phoneCode	=	valueOf(reqMap.get("phoneCode"));
-		String userId		=	valueOf(reqMap.get("userId"));
-		Object redisCode	=	RedisUtils.get(IDefineMsg.PHONE_CODE_INFO+phone);
+		String phone			=	valueOf(reqMap.get("phone"));
+		String tradePassword	=	valueOf(reqMap.get("tradePassword"));
+		String tradePasswordtwo	=	valueOf(reqMap.get("tradePasswordtwo"));
+		String phoneCode		=	valueOf(reqMap.get("phoneCode"));
+		String userId			=	valueOf(reqMap.get("userId"));
+		Object redisCode		=	RedisUtils.get(IDefineMsg.PHONE_CODE_INFO+phone);
 		
 		if(!phoneCode.equals(redisCode))
 			return makerErrResults(IDefineMsg.PHONE_CODE_IS_FAIL);
+		if(!tradePassword.equals(tradePasswordtwo))
+			return makerErrResults(IDefineMsg.PASSWORD_IS_DIFFRENT);
 		
 		String	tradeSalt	=	getShortUUid();
 		tradePassword		=	Encryption.md5s(tradePassword+tradeSalt);
@@ -223,6 +228,102 @@ public class UserServiceImpl extends ServiceAction implements UserService{
 			return makerErrResults(IDefineMsg.UPD_FAIL);
 		
 		return makerSusResults(IDefineMsg.UPD_SUCCESS);
+	}
+
+	@Override
+	public IResult forgetPassWord(Map<String, Object> reqMap) {
+		
+		IResult rs			=	checkParamsEmpty(reqMap);
+		if(!rs.isSuccessful()) return rs;
+		
+		List<Map<String, Object>> userMap =userDao.getUser(reqMap);
+		if(isEmpty(userMap))
+			return makerErrResults(IDefineMsg.GET_FAIL+"无该用户");
+		
+		String id 			=	getListMapValue(userMap, "id");
+		String phone		=	valueOf(reqMap.get("phone"));
+		String phoneCode	=	valueOf(reqMap.get("phoneCode"));
+		String loginPwd		=	valueOf(reqMap.get("loginPwd"));
+		String pwdtwo		=	valueOf(reqMap.get("pwdtwo"));
+		Object redisCode=	RedisUtils.get(IDefineMsg.PHONE_CODE_INFO+phone);
+		
+		
+		
+		if(!isNumChar(loginPwd))
+			return makerErrResults(IDefineMsg.PASSWORD_BY_FORMAT+"登录密码不能为纯数字或字母");
+		if(!loginPwd.equals(pwdtwo))
+			return makerErrResults(IDefineMsg.PASSWORD_IS_DIFFRENT);
+		if(!phoneCode.equals(redisCode))
+			return makerErrResults(IDefineMsg.PHONE_CODE_IS_FAIL);		
+		
+		String salt	= getShortUUid(); 
+		loginPwd	= Encryption.md5s(loginPwd+salt);
+		
+		Map<String, Object> rsMap =new HashMap<String, Object>(); 
+		
+		rsMap.put("loginPwd"	, loginPwd);
+		rsMap.put("salt"		, salt);
+		rsMap.put("id"			, id);
+		rsMap.put("updatetime"	, getCurDatetime());
+		
+		int flag	=	userDao.updUser(rsMap);
+		if(flag<0)
+			return makerErrResults(IDefineMsg.UPD_FAIL);
+		return makerSusResults(IDefineMsg.UPD_SUCCESS);
+	}
+
+	@Override
+	public IResult getProvince() {
+		
+		Map<String, Object> reqMap		=	new HashMap<String, Object>();
+		List<Map<String, Object>>	provinceList	=	userInfoDao.getProvince(reqMap);
+		
+		if(isNull(provinceList))
+			return makerErrResults(IDefineMsg.SQL_DB_EXCEPTION);
+		
+		return makerSusResults(IDefineMsg.GET_SUCCESS, provinceList);
+	}
+
+	@Override
+	public IResult getCity(Map<String, Object> reqMap) {
+		
+		String provinceID =	valueOf(reqMap.get("provinceID"));
+		if(isEmpty(provinceID))
+			return makerErrResults("省份"+IDefineMsg.LACK_PARAM);
+		
+		List<Map<String, Object>> cityList =	userInfoDao.getCity(reqMap);	
+		if(isNull(cityList))
+			return makerErrResults(IDefineMsg.SQL_DB_EXCEPTION);
+		
+		return makerSusResults(IDefineMsg.GET_SUCCESS, cityList);
+	}
+
+	@Override
+	public IResult getAreas(Map<String, Object> reqMap) {
+		
+		String cityID	=	valueOf(reqMap.get("cityID"));
+		if(isEmpty(cityID))
+			return makerErrResults("城市"+IDefineMsg.LACK_PARAM);
+		
+		List<Map<String, Object>> areasList	=	 userInfoDao.getAreas(reqMap);
+		if(isNull(areasList))
+			return makerErrResults(IDefineMsg.SQL_DB_EXCEPTION);
+		
+		return makerSusResults(IDefineMsg.GET_SUCCESS,areasList);
+	}
+
+	@Override
+	public IResult getBankNo() {
+		
+		List<BankCard> bankList =	CacheBankCard.getInstance().getBankcardList();
+		if(!isEmpty(bankList))
+			return makerSusResults(IDefineMsg.GET_SUCCESS, bankList);
+		
+		bankList	=	userInfoDao.findBank();
+		if(isEmpty(bankList))
+			return makerErrResults(IDefineMsg.SQL_DB_EXCEPTION);
+		
+		return makerSusResults(IDefineMsg.GET_SUCCESS, bankList);
 	}
 	
 }

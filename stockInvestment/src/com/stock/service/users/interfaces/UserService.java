@@ -66,9 +66,43 @@ public interface UserService {
 	public IResult updTradersPassword(Map<String, Object> reqMap);
 	
 	/**
+	 * 忘记密码修改
+	 * @param reqMap
+	 * @return
+	 */
+	public IResult forgetPassWord(Map<String, Object> reqMap);
+	
+	/**
 	 * 校验用户合法性
 	 * @param reqMap
 	 * @return
 	 */
 	public IResult checkUserLegal(Map<String, Object> reqMap);
+	
+	/**
+	 * 查询所有省
+	 * @param reqMap
+	 * @return
+	 */
+	public IResult getProvince();
+	
+	/**
+	 * 根据省查询所有市
+	 * @param reqMap
+	 * @return
+	 */
+	public IResult getCity(Map<String, Object> reqMap);
+	
+	/**
+	 * 根据市查询所有县
+	 * @param reqMap
+	 * @return
+	 */
+	public IResult getAreas(Map<String, Object> reqMap);
+	
+	/**
+	 * 获取全部银行卡名和银行代码
+	 * @return
+	 */
+	public IResult getBankNo();
 }
