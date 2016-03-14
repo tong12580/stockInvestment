@@ -46,8 +46,8 @@
 			<if test="status!=null">status=#{status},</if>
 			<if test="wxUnionid!=null">wxUnionid=#{wxUnionid},</if>
 			<if test="updatetime!=null">updatetime=#{updatetime},</if>
-			<if test="tradePassword!=null">updatetime=#{tradePassword},</if>
-			<if test="trade_salt!=null">updatetime=#{tradeSalt}</if>
+			<if test="tradePassword!=null">tradePassword=#{tradePassword},</if>
+			<if test="trade_salt!=null">tradeSalt=#{tradeSalt}</if>
 		</set>
 		where id=#{id}
 	</update>

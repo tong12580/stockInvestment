@@ -74,5 +74,9 @@
 		from areas a
 		where a.fatherID=#{cityID}
 	</select>
+	
+	<select id="findBank"  resultType="com.stock.pojo.BankCard">
+		select * from r_bank_card order by id asc
+	</select>
 			
 </mapper>

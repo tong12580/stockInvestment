@@ -6,10 +6,17 @@ import java.util.List;
 import java.util.Map;
 
 
+
 import com.stock.common.util.SpringContextUtil;
-import com.stock.dao.batch.BookDao;
+import com.stock.dao.simple.userDao.UserInfoDao;
 import com.stock.pojo.BankCard;
 
+/**
+ * 缓存银行信息
+ * @author yutong
+ * @since 2016/03/14
+ * 
+ */
 public class CacheBankCard extends AbstractCacheBase {
 	
 	
@@ -48,8 +55,9 @@ public class CacheBankCard extends AbstractCacheBase {
 		bankcardMap = new HashMap<String, BankCard>();
 		bankcardIdMap = new HashMap<Integer, BankCard>();
 		bankcardList = new ArrayList<BankCard>();
-		BookDao bookDao = (BookDao) SpringContextUtil.getBean("bookDao");
-		bankcardList  = bookDao.findBank();
+//		BookDao bookDao = (BookDao) SpringContextUtil.getBean("bookDao");
+		UserInfoDao userInfoDao =(UserInfoDao) SpringContextUtil.getBean("userInfoDao");
+		bankcardList  = userInfoDao.findBank();
 		
 		for (BankCard bankcard:bankcardList) {
 			bankcardMap.put(bankcard.getBankcode(), bankcard);
