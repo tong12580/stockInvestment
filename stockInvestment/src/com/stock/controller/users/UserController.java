@@ -19,8 +19,8 @@ import com.stock.pojo.user.Users;
 import com.stock.service.users.interfaces.UserService;
 
 @Controller
-@RequestMapping(value="/web")
-public class LoginController extends RootController{
+@RequestMapping(value="/web/api")
+public class UserController extends RootController{
 	
 	@Autowired
 	private UserService userService;
@@ -34,7 +34,7 @@ public class LoginController extends RootController{
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/register" , method =RequestMethod.POST)
+	@RequestMapping(value="/v1/user" , method =RequestMethod.POST)
 	public IResult registerUser(HttpServletResponse response, HttpServletRequest request,
 			String phone, String phoneCode, String loginPwd,String pwdtwo){
 		
@@ -70,7 +70,7 @@ public class LoginController extends RootController{
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/login",method=RequestMethod.POST)
+	@RequestMapping(value="/v1/login",method=RequestMethod.POST)
 	public IResult login(HttpServletResponse response, HttpServletRequest request,
 			String phone,String loginPwd){
 		
@@ -98,7 +98,7 @@ public class LoginController extends RootController{
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/upd/userinfo",method=RequestMethod.POST)
+	@RequestMapping(value="/v1/userinfo",method=RequestMethod.PUT)
 	public IResult updUserInfo( HttpServletRequest request,String userName,
 			String email,String sex,String provinceID,
 			String cityID,String areaID,String descs){
@@ -130,7 +130,7 @@ public class LoginController extends RootController{
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/upd/nickName",method=RequestMethod.PUT)
+	@RequestMapping(value="/v1/userinfo",method=RequestMethod.PATCH)
 	public IResult updNickName( HttpServletRequest request,String nickName){
 		
 		Users users =	getUser(request);
@@ -152,7 +152,7 @@ public class LoginController extends RootController{
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/upd/lpassword",method=RequestMethod.POST)
+	@RequestMapping(value="/v1/password",method=RequestMethod.PATCH)
 	public IResult updLoginPWD(HttpServletRequest request,String loginPwd,
 			String newpassword ,String passwordtwo){
 		
@@ -177,7 +177,7 @@ public class LoginController extends RootController{
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/upd/apassword",method=RequestMethod.POST)
+	@RequestMapping(value="/v1/tradePassword",method=RequestMethod.PUT)
 	public IResult updAccountPWD(HttpServletRequest request,
 			String tradePassword,String tradePasswordtwo,String phoneCode){
 		
@@ -205,7 +205,7 @@ public class LoginController extends RootController{
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/forget/password",method=RequestMethod.POST)
+	@RequestMapping(value="/v1/password",method=RequestMethod.PUT)
 	public IResult	forgetPassword(String phone, String phoneCode, String loginPwd,String pwdtwo){
 		
 		Map<String, Object> reqMap	=	new	HashMap<String, Object>();
@@ -224,7 +224,7 @@ public class LoginController extends RootController{
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/upd/img",method=RequestMethod.POST)
+	@RequestMapping(value="/v1/userinfo/img",method=RequestMethod.POST)
 	public IResult updImg(String img){
 		IResult rs =	null;
 		//TODO
@@ -237,7 +237,7 @@ public class LoginController extends RootController{
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/phone",method=RequestMethod.POST)
+	@RequestMapping(value="/v1/phone",method=RequestMethod.POST)
 	public IResult getPhoneCode(String phone){
 		
 		IResult rs =	userService.getPhoneCode(phone);
@@ -289,7 +289,7 @@ public class LoginController extends RootController{
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/allbankno")
+	@RequestMapping(value="/bank")
 	public	IResult getAllBankNo(){
 		IResult rs =	userService.getBankNo();
 		return rs;

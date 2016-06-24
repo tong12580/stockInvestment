@@ -54,12 +54,13 @@ public class FastjsonUtil {
 		map.put("a", "123");
 		map.put("b", "123");
 		map.put("c", "123");
-		System.out.println(map2json(map));
+		System.out.println("json:"+map2json(map));
 		Map<String, String> mapJsonMap = json2Map(map2json(map));
 		for (String str : mapJsonMap.keySet()){
 			System.out.println(str);
 		}
-		
+		Map<String, Object> rsMap = jsonChangeMap(map2json(map));
+		System.out.println("rsMap:"+rsMap);
 		
 		List<Integer> list = new ArrayList<Integer>();
 		list.add(1);
@@ -68,8 +69,11 @@ public class FastjsonUtil {
 		list.add(4);
 		System.out.println(serialize(list));
 		List<String> listJson = deserializeList(serialize(list), String.class);
-		System.out.println(listJson);	
+		System.out.println(listJson);
 		
+		rsMap.put("List",list);
+		System.out.println("rsMap:"+mapToJson(rsMap));
+		System.out.println("rsMap:"+jsonChangeMap(mapToJson(rsMap)));
 	}
 	
 	/**
@@ -125,12 +129,21 @@ public class FastjsonUtil {
     /**
      * 将JSON格式的字符串转换为Map类型的对象
      * @param json JSON格式的字符串
-     * @return Map类型的对象
+     * @return Map<String, String>类型的对象
      */
 	public static Map<String, String> json2Map(String json){ 
 		//JSON -> Map 
 		return (Map<String, String>)JSON.parse(json); 
 	} 
+	
+	/**
+	 * 将JSON格式的字符串转换为Map类型的对象
+	 * @param json JSON格式的字符串
+	 * @return
+	 */
+	public static Map<String, Object> jsonChangeMap(String json){
+		return JSON.parseObject(json);
+	}
 	
 	/**
      * 将数组格式的转换为String类型的对象
@@ -149,6 +162,15 @@ public class FastjsonUtil {
 	public static String map2json(Map<String, String> map){ 
 	    return JSON.toJSONString(map); 
 	} 
+	
+	/**
+     * 将Map格式的转换为String类型的对象
+     * @param Map格式的字符串
+     * @return String类型的对象
+     */
+	public static String mapToJson(Map<String, Object> map){
+		return JSON.toJSONString(map);
+	}
 	
 	  public static String toJson(Object src)
 	  {

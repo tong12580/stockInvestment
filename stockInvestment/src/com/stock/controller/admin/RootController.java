@@ -3,9 +3,9 @@ package com.stock.controller.admin;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.stock.common.RedisUtils;
@@ -86,7 +86,7 @@ public class RootController extends ServiceAction{
 	 * @param response
 	 * @return
 	 */
-	@RequestMapping(value="/logout" ,method=RequestMethod.DELETE)
+	@RequestMapping(value="/logout")
 	@ResponseBody
 	public IResult logout(HttpServletRequest request,HttpServletResponse response){
 		//用户登录信息存放至缓存中
@@ -94,4 +94,32 @@ public class RootController extends ServiceAction{
 		RedisUtils.set(sessionKey+IDefineMsg.USER_KEY, null, 0);
 		return makerSusResults("已退出");
 	}
+	
+	/**
+	 * 获取登陆者ip
+	 * @param request
+	 * @return ip
+	 * @throws Exception
+	 */
+	public static String getIpAddr(HttpServletRequest request) throws Exception{
+		
+		String ip = request.getHeader("X-Real-IP");
+		if (!StringUtils.isBlank(ip) && !"unknown".equalsIgnoreCase(ip)) {
+			return ip;
+			}
+		ip = request.getHeader("X-Forwarded-For");
+		if (!StringUtils.isBlank(ip) && !"unknown".equalsIgnoreCase(ip)) {
+				// 多次反向代理后会有多个IP值，第一个为真实IP。
+				int index = ip.indexOf(',');
+			if (index != -1) {
+					return ip.substring(0, index);
+			} else {
+					return ip;
+			}
+			
+			} else {
+				return request.getRemoteAddr();
+		}
+	}
+	
 }

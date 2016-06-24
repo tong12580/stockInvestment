@@ -2,6 +2,7 @@ package com.stock.common.util.response;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.stock.common.FastjsonUtil;
 import com.stock.common.util.response.IDefineMsg;
 import com.stock.common.util.response.IResult;
 import com.stock.common.util.response.Result;
@@ -44,7 +45,7 @@ public class ServiceAction extends LogUtil{
 	/**
 	 * 判断对象是否为空
 	 * @param obj
-	 * @return
+	 * @return boolean
 	 */
   public static  boolean  isNull(Object obj)
   {
@@ -60,7 +61,7 @@ public class ServiceAction extends LogUtil{
   /**
 	 * 字符是否为空或"null"
 	 * @param str
-	 * @return
+	 * @return boolean
 	 */
   public static boolean isEmpty(String str)
   {
@@ -73,7 +74,7 @@ public class ServiceAction extends LogUtil{
   /**
 	 * list是否为空
 	 * @param list
-	 * @return
+	 * @return boolean
 	 */
   public static boolean isEmpty(List<?> list)
   {
@@ -86,7 +87,7 @@ public class ServiceAction extends LogUtil{
 	/**
 	 * map是否为空
 	 * @param map
-	 * @return
+	 * @return boolean
 	 */
   public static boolean isEmpty(Map<?,?> map)
   {
@@ -99,7 +100,7 @@ public class ServiceAction extends LogUtil{
   /**
    * 遍历交易map中的空值
    * @param reqMap
-   * @return
+   * @return IResult
    */
   public static IResult checkParamsEmpty(Map<String, Object> reqMap){
 		
@@ -110,6 +111,24 @@ public class ServiceAction extends LogUtil{
 	
 		return makerSusResults(IDefineMsg.CHEACK_SUC);
   }  
+  
+  /**
+   * json-->map并校验是否为空
+   * @param json
+   * @return {@link IResult} JosnMap<String,Object> 
+   */
+  public static IResult checkJsonEmpty(String json){
+	  
+	  Map<String, Object> reqMap	=FastjsonUtil.jsonChangeMap(json);
+	  
+	  for(Map.Entry<String, Object> map : reqMap.entrySet()){
+		  if(isNull(map.getValue()))
+			  return makerErrResults(map.getKey()+IDefineMsg.LACK_PARAM);
+	  }
+	
+		return makerSusResults(IDefineMsg.CHEACK_SUC,reqMap);
+  }
+  
   
 	/**
 	 * 判断字符串是否只有数字及字母

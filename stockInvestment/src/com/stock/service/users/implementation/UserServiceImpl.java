@@ -325,5 +325,14 @@ public class UserServiceImpl extends ServiceAction implements UserService{
 		
 		return makerSusResults(IDefineMsg.GET_SUCCESS, bankList);
 	}
+
+	@Override
+	public IResult getBankNo(String bankcode) {
+		
+		BankCard bankCard=CacheBankCard.getInstance().getBankcardByCode(bankcode);
+		if(isNull(bankCard))	
+			return makerErrResults("查询失败");
+		return makerSusResults("查询成功", bankCard);
+	}
 	
 }

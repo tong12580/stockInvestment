@@ -101,7 +101,7 @@ public class Encryption {
 	
 	public static void main(String args[]){
 		
-		System.out.println(md5s("123456" + "20140416123"));
+		System.out.println(md5s("123456" + "15999599339"));
 		String encode = getSHAEncode(new String[] { "…Ó€⁄¥Û≥œ»Ìº˛" });
 		String encode2 = getMD5Encode(new String[] { "12345620140416123" });
 		System.out.print(encode2);

@@ -105,4 +105,10 @@ public interface UserService {
 	 * @return
 	 */
 	public IResult getBankNo();
+	
+	/**
+	 * 根据银行代码获取银行卡名
+	 * @return
+	 */
+	public IResult getBankNo(String bankcode);
 }
